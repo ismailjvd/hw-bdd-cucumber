@@ -29,10 +29,29 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
   # HINT: use String#split to split up the rating_list, then
   #   iterate over the ratings and reuse the "When I check..." or
   #   "When I uncheck..." steps in lines 89-95 of web_steps.rb
-  fail "Unimplemented"
+  # all_cb = ["ratings_G", "ratings_PG", "ratings_PG-13", "ratings_R"]
+  cb = rating_list.split /\s*,\s*/
+  cb = cb.map {|r| "ratings_".concat(r)}
+  # not_cb = all_cb.select {|r| not (cb.include? r)}
+  cb.each do |r|
+      if uncheck
+          uncheck(r)
+      else
+          check(r)
+      end
+  end
+  # not_cb.each do |r|
+  #     uncheck(r)
+  # end
 end
 
 Then /I should see all the movies/ do
   # Make sure that all the movies in the app are visible in the table
-  fail "Unimplemented"
+  Movie.all.each do |m|
+      if page.respond_to? :should
+        page.should have_content(m.title)
+      else
+        assert page.has_content?(m.title)
+      end
+  end
 end
